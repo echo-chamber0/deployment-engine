@@ -1,4 +1,4 @@
-# Data Commons Accelerator - GCP Marketplace User Guide
+# Data Commons Accelerator - GCP Marketplace Deployment Guide
 
 A complete guide to deploying and managing Data Commons Accelerator through Google Cloud Marketplace.
 

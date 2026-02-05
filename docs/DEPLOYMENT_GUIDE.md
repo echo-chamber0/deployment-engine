@@ -123,7 +123,6 @@ Your Google Cloud user account must have these roles assigned on the GCP project
 | Project IAM Admin | Assign IAM roles to service accounts |
 | Service Account Admin | Create and manage GCP service accounts |
 | Service Account User | Act as service accounts for Workload Identity |
-| Governed Marketplace User | View and deploy solutions from Marketplace |
 
 Contact your GCP administrator if you are missing any roles.
 

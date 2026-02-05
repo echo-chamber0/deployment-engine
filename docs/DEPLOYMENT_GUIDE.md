@@ -111,7 +111,7 @@ Before deploying Data Commons Accelerator, ensure you have the following:
 
 ### Required IAM Roles
 
-Your Google Cloud user account must have these roles assigned on the GCP project:
+Your Google Cloud user account must have at least these roles assigned on the GCP project to deploy solution from Marketplace:
 
 | Role | Purpose |
 |------|---------|

@@ -21,28 +21,22 @@ A complete guide to deploying and managing Data Commons Accelerator through Goog
 
 ### What is Data Commons Accelerator?
 
-Data Commons Accelerator is a ready-to-deploy instance of [Custom Data Commons](https://docs.datacommons.org/custom_dc/) on Google Kubernetes Engine (GKE). [Data Commons](https://datacommons.org) is an open knowledge repository providing unified access to public datasets and statistics, enabling your organization to explore data without manually aggregating from multiple sources.
+Data Commons Accelerator is a ready-to-deploy instance of **Custom Data Commons** on Google Kubernetes Engine (GKE). [Data Commons](https://docs.datacommons.org/what_is.html) is an open knowledge repository providing unified access to public datasets and statistics. For more details on custom Data Commons and its benefits, see [Custom Data Commons documentation](https://docs.datacommons.org/custom_dc/).
 
 ### What Problems Does It Solve?
 
-Data Commons addresses these common data exploration challenges:
+Data Commons Accelerator simplifies deploying a custom Data Commons instance—removing the complexity of infrastructure setup, Kubernetes configuration, and cloud resource provisioning. It empowers domain experts and data analysts to quickly create a custom Data Commons, integrate their datasets, and leverage the public Data Commons knowledge graph.
 
-- **Data Fragmentation**: Public datasets scattered across multiple sources with different formats
-- **Time-to-Insight**: Analysts spend weeks aggregating and standardizing data manually
-- **Lack of Context**: Difficulty understanding relationships and connections between datasets
-- **Scalability**: Traditional approaches break down with large datasets and many concurrent users
-- **Customization**: Need to combine public data with proprietary internal datasets
+**Value Proposition:**
+
+- **Simplicity**: Deploy a complex data solution with a few clicks, eliminating manual setup and configuration
+- **Efficiency**: Streamline custom Data Commons adoption via Marketplace, bypassing traditional sales cycles
+- **Accelerated Time-to-Insight**: Quickly join proprietary datasets with public data (census, economic, weather) to unlock new correlations
+- **Empowerment**: Natural language interface allows non-technical users to query data without code
 
 ### Who Should Use It?
 
-Data Commons Accelerator is ideal for:
-
-- **Data analysts** exploring public datasets and statistics
-- **Researchers** studying demographic, economic, or environmental trends
-- **Government agencies** publishing and analyzing public statistics
-- **Non-profit organizations** working with community data
-- **Academic institutions** teaching data analysis and visualization
-- **Enterprise teams** integrating public data with business intelligence
+See [Custom Data Commons: When do I need a custom instance?](https://docs.datacommons.org/custom_dc/) for use cases and audience guidance.
 
 ### What Gets Deployed?
 
@@ -62,67 +56,27 @@ No additional infrastructure setup is required—everything integrates with your
 
 ### Components
 
-The Data Commons Accelerator solution consists of four primary components:
+This Marketplace solution deploys the following GCP resources:
 
-**1. GKE Application Container**
+| Component | Description |
+|-----------|-------------|
+| **GKE Workload** | Data Commons application pods running in your existing cluster (namespace: `datacommons`) |
+| **CloudSQL MySQL** | Managed database with private IP (via VPC Private Service Access) for dataset storage |
+| **GCS Bucket** | Cloud Storage for custom data imports |
+| **Service Account** | Workload Identity-enabled SA for secure access to CloudSQL, GCS, and Maps API |
+| **db-init Job** | One-time Kubernetes Job that initializes the database schema |
+| **db-sync CronJob** | Recurring job that syncs custom data from GCS to CloudSQL (every 3 hours) |
 
-Your Data Commons Accelerator application runs as Kubernetes pods in your existing GKE cluster. The application:
-
-- Provides the web UI for data exploration
-- Handles API requests from users and external clients
-- Processes statistical queries and visualizations
-- Integrates with the Google Maps API for geospatial features
-
-The application runs in a dedicated Kubernetes namespace (default: `datacommons`) to keep it isolated from other workloads on your cluster.
-
-**2. CloudSQL Database**
-
-A managed MySQL database stores:
-
-- Statistical datasets and curated public data
-- Metadata describing available datasets
-- User-created custom datasets
-- Query history and saved visualizations
-
-The database is deployed to a private IP address (via VPC Private Service Access) for security. It never exposes a public IP to the internet. Database replicas and backups are automatically managed by Google Cloud.
-
-**3. Cloud Storage Bucket**
-
-A GCS bucket stores:
-
-- Custom datasets you import
-- Exported data in various formats
-- Query results and visualizations
-- Temporary files during data processing
-
-You control who can access the bucket via GCP IAM permissions.
-
-**4. Data Ingestion**
-
-The solution includes automated data processing:
-
-- **Database Initialization (db-init)**: A one-time Kubernetes Job that initializes the CloudSQL database schema on first deployment
-- **Data Sync (db-sync)**: A recurring CronJob that synchronizes custom data from your GCS bucket to CloudSQL every 3 hours
-
-Both use the import service container image and run Python-based data processing. The sync schedule is configurable.
-
-**5. Workload Identity**
-
-A Google Cloud service account authenticates the application to cloud resources:
-
-- CloudSQL access via Workload Identity binding
-- GCS bucket access via IAM roles
-- Google Maps API calls via API key
-- All credentials managed securely (no keys stored in pods)
+For details on Data Commons architecture and how the application works internally, see [Custom Data Commons documentation](https://docs.datacommons.org/custom_dc/).
 
 ### How Components Interact
 
 ```
-User Browser
-    │
-    ├─> GKE Pod (Data Commons Application)
-    │       │
-    │       ├─> CloudSQL Database (private IP)
+User Browser                         GCS Bucket (Custom Data)
+    │                                     │
+    ├─> GKE Pod (Data Commons App)        ├─> db-sync CronJob (every 3 hours)
+    │       │                             │
+    │       ├─> CloudSQL Database <───────┘
     │       │   └─> Dataset storage, queries
     │       │
     │       ├─> GCS Bucket
@@ -132,7 +86,7 @@ User Browser
     │           └─> Geospatial visualization
     │
     └─> Infrastructure Manager
-        └─> Manages Kubernetes resources
+        └─> Creates all related components/infrastructure of Data Commons (k8s resources, CloudSQL, IAM, GCS etc.)
 ```
 
 **Deployment Workflow:**
@@ -169,6 +123,7 @@ Your Google Cloud user account must have these roles assigned on the GCP project
 | Project IAM Admin | Assign IAM roles to service accounts |
 | Service Account Admin | Create and manage GCP service accounts |
 | Service Account User | Act as service accounts for Workload Identity |
+| Governed Marketplace User | View and deploy solutions from Marketplace |
 
 Contact your GCP administrator if you are missing any roles.
 
@@ -333,7 +288,8 @@ gcloud compute addresses list --global --filter="purpose=VPC_PEERING"
 
 If you no longer need the Data Commons Accelerator, delete the deployment to stop incurring costs.
 
-1. Go to **Solution deployments**
-2. Find your deployment and click the **three-dot menu** (⋮)
-3. Click **Delete**
-4. Confirm the deletion
+1. Go to [Google Cloud Console](https://console.cloud.google.com)
+2. Search for "Solution deployments"
+3. Find your deployment and click the **three-dot menu** (⋮)
+4. Click **Delete**
+5. Confirm the deletion

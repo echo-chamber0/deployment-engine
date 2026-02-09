@@ -8,10 +8,9 @@
 2. [Architecture](#architecture)
 3. [Prerequisites](#prerequisites)
 4. [Deployment via GCP Marketplace](#deployment-via-gcp-marketplace)
-5. [Accessing Your Deployment](#accessing-your-deployment)
-6. [Using Data Commons Accelerator](#using-data-commons-accelerator)
-7. [Troubleshooting](#troubleshooting)
-8. [Deleting Your Deployment](#deleting-your-deployment)
+5. [Using Data Commons Accelerator](#using-data-commons-accelerator)
+6. [Troubleshooting](#troubleshooting)
+7. [Deleting Your Deployment](#deleting-your-deployment)
 
 ---
 
@@ -58,7 +57,7 @@ This Marketplace solution deploys the following GCP resources:
 
 | Component | Description |
 |-----------|-------------|
-| **GKE Workload** | Data Commons application pods running in your existing cluster (namespace: `datacommons`) |
+| **GKE Workload** | Data Commons application pods running in your existing cluster (namespace matches your deployment name) |
 | **CloudSQL MySQL** | Managed database with private IP (via VPC Private Service Access) for dataset storage |
 | **GCS Bucket** | Cloud Storage for custom data imports |
 | **Service Account** | Workload Identity-enabled SA for secure access to CloudSQL, GCS, and Maps API |
@@ -124,13 +123,42 @@ Your Google Cloud user account must have at least these roles assigned on the GC
 
 Contact your GCP administrator if you are missing any roles.
 
+#### Deployment Service Account (Automatic)
+
+The deployment automatically creates a Service Account with the following roles. These are **not** assigned to users — they are used by the application and Infrastructure Manager:
+
+| Role | Purpose |
+|------|---------|
+| roles/container.developer | Application workload management on GKE |
+| roles/storage.admin | Read/write access to the GCS data bucket |
+| roles/cloudsql.admin | Database instance management |
+| roles/config.agent | Infrastructure Manager operations |
+| roles/iam.infrastructureAdmin | Infrastructure resource management |
+| roles/iam.serviceAccountAdmin | Service account lifecycle management |
+| roles/serviceusage.serviceUsageAdmin | API enablement |
+| roles/serviceusage.apiKeysAdmin | API key management |
+| roles/resourcemanager.projectIamAdmin | IAM binding management |
+
+### Roles for Working with the Deployed Solution
+
+After deployment, your team members will need GCP IAM roles to interact with the deployed resources.
+
+| Role | What It Allows |
+|------|----------------|
+| Kubernetes Engine Developer | Application workload management on GKE |
+| Cloud SQL Client | Connect directly to CloudSQL for database debugging |
+| Cloud SQL Admin | Modify database configuration, manage backups and replicas |
+| Cloud Infrastructure Manager Viewer | View deployment state and Terraform outputs |
+| Cloud Infrastructure Manager Admin | Redeploy, update Terraform variables, manage deployment lifecycle |
+| Storage Object Viewer | Download and read files from the GCS data bucket |
+| Storage Object Admin | Upload, modify, and delete files in the GCS data bucket |
+| API Keys Admin | Rotate or manage the Google Maps API key |
+
 ### Data Commons API Key
 
 Data Commons Accelerator requires an API key to access the Data Commons knowledge graph.
 
 To obtain your API key, visit [Data Commons API documentation](https://docs.datacommons.org/custom_dc/quickstart.html/) and follow the "Get a Data Commons API Key" section. Save the key securely—you will need it during deployment.
-
-**Security:** Keep your API key confidential and never commit it to version control.
 
 ---
 
@@ -153,6 +181,8 @@ This section walks through deploying Data Commons Accelerator via GCP Marketplac
 The Marketplace will open a deployment configuration form organized into several sections: **Basic** (deployment name and project), **GKE** (cluster details), **CloudSQL** (database settings), **Cloud Storage** (bucket configuration), **API** (Data Commons API key), and **Application** (pod replicas and resource sizing).
 
 Each field has built-in tooltips with detailed guidance—hover over or click the help icon next to any field for clarification. The form validates your inputs and shows clear error messages if anything is incorrect.
+
+For detailed descriptions of every form field, valid values, and tips, see [Marketplace Fields Reference](MARKETPLACE_FIELDS.md).
 
 **Before you start, gather these from Prerequisites:**
 - Your **GKE cluster name and location**
@@ -187,14 +217,12 @@ Deployment takes approximately **10–15 minutes**. A progress indicator will ap
 
 When the status shows **"Active"**, your deployment is complete. Proceed to the next section for accessing your application.
 
----
-
-## Accessing Your Deployment
+### Step 4: Access Your Deployment
 
 All deployment outputs—resource names, connection strings, and commands—are available in:
 **Infrastructure Manager** > **Deployments** > your deployment > **Outputs** tab.
 
-### Quick Access via Cloud Shell (Recommended)
+#### Quick Access via Cloud Shell (Recommended)
 
 The easiest way to access your deployment—no local tools needed:
 
@@ -204,10 +232,10 @@ The easiest way to access your deployment—no local tools needed:
    ```bash
    until kubectl port-forward -n NAMESPACE svc/datacommons 8080:8080; do echo "Port-forward crashed. Respawning..." >&2; sleep 1; done
    ```
-   (Replace `NAMESPACE` with your namespace from the Outputs tab; default: `datacommons`)
+   (Replace `NAMESPACE` with your deployment name — the namespace matches your deployment name)
 4. In the Cloud Shell toolbar, click **Web Preview** > **Preview on port 8080**
 
-### Local Access via kubectl
+#### Local Access via kubectl
 
 If you have `gcloud` and `kubectl` installed locally:
 
@@ -221,7 +249,7 @@ If you have `gcloud` and `kubectl` installed locally:
    ```
 3. Open http://localhost:8080 in your browser
 
-### Production Access
+#### Production Access
 
 For external access, follow:
 **[GCP Guide: Exposing Applications in GKE](https://docs.cloud.google.com/kubernetes-engine/docs/how-to/exposing-apps)**
@@ -254,14 +282,14 @@ For comprehensive guides on using Data Commons, refer to the official documentat
 
 ### Pod Status and Logs
 
-**GKE Console:** Kubernetes Engine > Workloads > filter by namespace `datacommons`
+**GKE Console:** Kubernetes Engine > Workloads > filter by your deployment namespace (namespace matches your deployment name)
 
 **Quick diagnostics from Cloud Shell:**
 
 ```bash
-kubectl get pods -n datacommons
-kubectl describe pod POD_NAME -n datacommons
-kubectl logs -n datacommons -l app.kubernetes.io/name=datacommons
+kubectl get pods -n NAMESPACE
+kubectl describe pod POD_NAME -n NAMESPACE
+kubectl logs -n NAMESPACE -l app.kubernetes.io/name=datacommons
 ```
 
 **Common pod issues:**
@@ -278,6 +306,27 @@ gcloud compute addresses list --global --filter="purpose=VPC_PEERING"
 
 - **"Couldn't find free blocks"** — Use `psa_range_configuration: "create_16"` for more IPs
 - **"Peering already exists"** — Use `psa_range_configuration: "existing"` with your existing range name
+
+### Port-Forward Connection Refused
+
+**Error:**
+
+```text
+E0206 portforward.go:424 "Unhandled Error" err="an error occurred forwarding 8080 -> 8080: connection refused"
+```
+
+**Cause:** The port-forward connection drops when the application receives too many concurrent requests — for example, opening the `/explore` page which loads many data widgets simultaneously. It can also occur during pod startup while the application is initializing.
+
+**Fix:**
+1. If using the auto-retry loop (`until kubectl port-forward ...`), it will reconnect automatically
+2. If running a single port-forward, simply re-run the command
+3. If the error persists, check pod status: `kubectl get pods -n NAMESPACE` — ensure the pod is `Running` with `1/1` Ready
+
+### Error Loading GKE Cluster Location
+
+**Error:** The Marketplace form shows "Error loading GKE Cluster Location" when selecting a cluster.
+
+**Fix:** Refresh the browser page. This is a transient UI loading error. Your previously entered values may need to be re-entered.
 
 ---
 

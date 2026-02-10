@@ -1,0 +1,201 @@
+# Data Commons Accelerator - User Guide
+
+This guide explains how to access, configure, and use your Custom Data Commons instance deployed via the Google Cloud Marketplace.
+
+# Getting Started
+
+To configure the User Interface of the landing page, upload your company logo and private data you need to login as custom Data Commons Administrator. This is applicable to all domains.
+
+## Retrieve Administrator Credentials
+
+The application administrator password is not provided in the deployment outputs for security reasons. To retrieve your initial credentials:
+
+1. **Connect to your cluster** via Cloud Shell:
+
+    ```bash  
+    gcloud container clusters get-credentials [CLUSTER_NAME] --region [REGION]  
+    ```
+
+2. **Run the secret retrieval command**:  
+
+    ```bash
+    kubectl get secret [DEPLOYMENT_NAME] -n [NAMESPACE] -o json | jq -r '.data | to_entries[] | "\\(.key): \\(.value | @base64d)"'  
+    ```
+
+## Administrator Log In
+
+1. Navigate to your application URL.
+e.g. `https://education.example.com/`.  
+2. To access the **Admin Panel**, append `/admin` to the URL:  
+e.g.`https://education.example.com/admin/`  
+3. Enter the username and password generated in the previous step.  
+4. Depending on your choice during deployment you will be logged in as an admin for one of the custom data Commons templates for different domains (education, health, energy etc).
+
+# Data Commons for Education
+
+***Template: Student Recruitment Intelligence Center***
+
+## Overview
+
+The Education template combines your private applicant data with public demographic trends to help universities identify high-potential recruitment regions.
+
+## For Administrators
+
+### Prepare Custom Data
+
+To populate the dashboard with your university's private data:
+
+1. See [Prepare and load your own data](https://docs.datacommons.org/custom_dc/custom_data.html).
+2. Ensure your data matches the required schema for Education template. You can download a sample CSV directly from the application **Data & Files** tab and fill in your data there.
+
+### Upload Custom Data
+
+To populate the dashboard with your university's private data:  
+
+1. Log in and navigate to the **Admin Panel**.  
+2. Go to **Data & Files** tab.  
+3. Locate **Applicant Data Upload** section.  
+4. Click **Choose File**, select your CSV, and click **Upload**.  
+     *Success*: You will see a "Rows successfully uploaded" message.  
+     *Error*: The system will indicate specific line/column issues.
+
+### Customize User Interface
+
+1. In the Admin Panel, navigate to **Theme Settings**.  
+2. **University Branding**:
+
+* **Name:** Update the university name displayed in the top bar.  
+* **Logo:** Upload a PNG image.
+
+3. **Dashboard Text**:
+
+* **Header Text:** Edit the main title (e.g., "Student Recruitment Intelligence Center").  
+* **Hero Description:** Update the subtitle describing the purpose of your custom Data Commons.
+
+4. Click **Save Changes**. Updates are applied immediately.
+
+### Data Security
+
+Your uploaded CSV data is stored securely within your Google Cloud SQL instance. It is combined with public Data Commons data only at the visualization layer and is not shared externally.
+
+## Data commons for Data Analysts & Researchers
+
+### Explore Recruitment Metrics
+
+The dashboard provides a high-level view of your recruitment landscape:
+
+* **Total Applicants:** Aggregated count for the target year.  
+* **Avg Opportunity Score:** A calculated metric indicating regional potential.  
+* **High Opportunity Markets:** Count of regions exceeding your target criteria.  
+* **Avg Household Income:** Public demographic data correlated with your target regions.
+
+### Interactive Maps
+
+The **Recruitment Potential by State** map visualizes where your applicants are coming from versus high-opportunity areas.
+
+* **Hover:** Hover over a state to see specific applicant counts and opportunity scores.
+
+### Filtering & Deep Dives
+
+Filters: Use the dropdowns at the top (e.g., Target Year) to filter all widgets on the page.  
+Standard Tools: Click "Explore in Timeline Tool" on specific widgets to analyze the data using standard Data Commons graphing tools.
+
+# Data Commons for Health
+
+***Template: Population Health & City Comparison***
+
+## Overview
+
+The Health template allows organizations to compare specific health metrics (e.g., obesity, diabetes, smoking) across different cities, blending local private data with public CDC data.
+
+## For Administrators
+
+### Upload & Configuration
+
+Follow the standard upload procedure outlined in the ***getting-started*** section.
+
+* **Data Requirement:** Ensure your CSV contains city-level health metrics formatted according to the template schema.
+
+### Customize Branding
+
+Follow the standard Theme Settings instructions to update the Organization Name and Logo.
+
+## For Data Analysts & Researchers
+
+### Compare Cities
+
+The primary feature of this dashboard is the City Comparator.
+
+1. Locate the "Compare Cities" section at the top.
+2. The default city (e.g., Boston, MA) is selected.  
+3. Click **+ Add City** to select up to 4 additional cities.  
+4. The dashboard will update to show side-by-side metrics.
+
+### Key Metrics Indicators
+
+View cards displaying current percentages for:
+
+* Obesity  
+* Smoking  
+* Physical Health  
+* Diabetes  
+* High Blood Pressure
+
+### Visual Comparison & Distribution
+
+* **Bar Charts:** Compare the selected cities against each other across multiple health categories (e.g., "People Vaccinated," "People Who Are Sick").  
+* **Trend Lines:** View the "Health Issue Distribution" over time (2020–2024) to identify rising or falling trends.
+
+# Data Commons for Energy
+
+***Template: Methane Insights & Asset Risk***
+
+## Overview
+
+The Energy template focuses on environmental monitoring, specifically correlating private asset locations with public methane plume data to identify high-risk leaks and community impact.
+
+## For Administrators
+
+### Upload Asset Data
+
+* Navigate to **Admin Panel > Data & Files.**  
+* Upload your **Asset Locations CSV.** This file must contain coordinates (latitude/longitude) of your infrastructure.
+
+## For Data Analysts & Researchers
+
+### Risk Overview (KPI Cards)
+
+* **Total Plume-Asset Intersections:** Percentage of assets currently intersecting with detected methane plumes.  
+* **Assets Near Communities:** Count of assets within a specific radius of populated areas.  
+* **High-Risk Issues:** Critical alerts detected in the last 30 days.
+
+### Methane Map Chart
+
+This interactive map layers three datasets:
+
+* **Methane Plumes (Public):** Satellite detection data.  
+* **Asset Density (Private):** Your uploaded infrastructure.  
+* **Community Risk Index (Public):** Census data indicating vulnerable populations.
+
+### Detailed Intersections Table
+
+Review specific leak events in the table at the bottom of the dashboard:
+
+* **Risk Score:** Low / Medium / High / Critical.  
+* **Leak Event ID:** Unique identifier for the detection.  
+* **Suspected Asset:** The specific asset ID linked to the leak.  
+* **Vulnerability Level:** Demographic risk score of the nearby community.  
+* **Action Status:** Current operational status (e.g., "Normal Operations").
+
+# Known Limitations
+
+* **Data Sync:** Dashboard data refreshes automatically after upload, but large CSVs may take a few moments to process.  
+* **Browser Support:** For best performance, use the latest version of Chrome.
+
+# Request Support
+
+If you encounter issues not covered in this guide:  
+
+1. Check the deployment logs in your Google Cloud Console.
+2. Contact your organization's system administrator.  
+3. To report bugs, request new features [Get Data Commons support](https://docs.datacommons.org/support.html).

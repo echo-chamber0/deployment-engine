@@ -311,7 +311,7 @@ Data Commons Accelerator application configuration and resource allocation.
 | Field | Type | Required | Default | Description |
 |-------|------|----------|---------|-------------|
 | **Resource Tier** | Dropdown | Yes | `medium` | Resource allocation for pods |
-| **Domain Template** | Dropdown | Yes | `custom` | Pre-built domain configuration |
+| **Domain Template** | Dropdown | Yes | — | Pre-built domain configuration |
 | **Application Replicas** | Number | Yes | `1` | Number of application replicas |
 
 ### Resource Tier
@@ -341,19 +341,17 @@ Data Commons Accelerator application configuration and resource allocation.
 
 ### Domain Template
 
-**Description:** Select a pre-built Data Commons configuration optimized for a specific domain. Each domain includes curated datasets, statistical variables, and visualizations tailored to that subject area.
+**Description:** Select a pre-built Data Commons configuration optimized for a specific domain. Each domain includes curated datasets, statistical variables, and visualizations tailored to that subject area. Choose the domain that best matches your use case.
 
 **Type:** Dropdown
-**Default:** `custom`
 **Required:** Yes
 
 **Valid Options:**
 
 | Option | Value | Description |
 |--------|-------|-------------|
-| Custom (blank - bring your own data) | `custom` | **Default** - Start with a blank configuration and import your own data |
-| Health (health related data) | `health` | Pre-configured for health-related datasets (epidemiology, healthcare) |
 | Education (education related data) | `education` | Pre-configured for education-related datasets (schools, enrollment, outcomes) |
+| Health (health related data) | `health` | Pre-configured for health-related datasets (epidemiology, healthcare) |
 | Energy (energy related data) | `energy` | Pre-configured for energy-related datasets (consumption, generation, emissions) |
 
 **Note:** You can customize any template after deployment. The template just provides a starting point.

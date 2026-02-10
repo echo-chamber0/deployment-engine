@@ -16,7 +16,7 @@ The application administrator password is not provided in the deployment outputs
     gcloud container clusters get-credentials [CLUSTER_NAME] --region [REGION]  
     ```
 
-2. *Run the secret retrieval command**:  
+2. **Run the secret retrieval command**:  
 
     ```bash
     kubectl get secret [DEPLOYMENT_NAME] -n [NAMESPACE] -o json | jq -r '.data | to_entries[] | "\\(.key): \\(.value | @base64d)"'  

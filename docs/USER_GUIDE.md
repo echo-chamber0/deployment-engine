@@ -22,7 +22,7 @@ The application administrator password is not provided in the deployment outputs
 2. **Run the secret retrieval command**:
 
     ```bash
-    kubectl get secret datacommons -n [NAMESPACE] -o json | jq -r '.data | to_entries[] | "\\(.key): \\(.value | @base64d)"'
+    echo 'Admin Username:' && kubectl get secret datacommons -n [NAMESPACE] -o jsonpath='{.data.ADMIN_PANEL_USERNAME}' | base64 -d && echo && echo 'Admin Password:' && kubectl get secret datacommons -n [NAMESPACE] -o jsonpath='{.data.ADMIN_PANEL_PASSWORD}' | base64 -d && echo
     ```
 
    Replace `[CLUSTER_NAME]`, `[REGION]`, and `[NAMESPACE]` with your deployment values. The namespace matches your deployment name.

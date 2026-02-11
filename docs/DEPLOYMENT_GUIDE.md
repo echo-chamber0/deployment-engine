@@ -201,10 +201,14 @@ The CloudSQL section of the form asks how to configure Private Service Access fo
 > [!CAUTION]
 > **Choosing the wrong PSA option can disrupt existing services.** If your VPC already has Private Service Access configured (e.g., for other CloudSQL instances, Cloud Composer, etc.), you **must** select "Use Existing PSA" and provide your range name. Selecting "Create New" on a VPC with existing PSA will **replace all existing peering ranges**.
 >
-> Check if your VPC has existing PSA before deploying:
+> Find your GKE cluster's VPC network name:
+> ```bash
+> gcloud container clusters describe [CLUSTER_NAME] --location=[LOCATION] --format="value(network)"
+> ```
+> Then check if that VPC has existing PSA:
 > ```bash
 > gcloud compute addresses list --global \
->   --filter="purpose=VPC_PEERING AND network=YOUR_VPC_NAME" \
+>   --filter="purpose=VPC_PEERING AND network=[YOUR_VPC_NAME]" \
 >   --format="table(name,address,prefixLength,network)"
 > ```
 > If this returns results, select **"Use my existing PSA range"** in the form.
@@ -240,9 +244,9 @@ The easiest way to access your deployment—no local tools needed:
 2. Click **Run in Cloud Shell**
 3. Run the port-forward command:
    ```bash
-   until kubectl port-forward -n NAMESPACE svc/datacommons 8080:8080; do echo "Port-forward crashed. Respawning..." >&2; sleep 1; done
+   until kubectl port-forward -n [NAMESPACE] svc/datacommons 8080:8080; do echo "Port-forward crashed. Respawning..." >&2; sleep 1; done
    ```
-   Replace `NAMESPACE` with your deployment name — the namespace matches your deployment name.
+   Replace `[NAMESPACE]` with your deployment name — the namespace matches your deployment name.
 4. In the Cloud Shell toolbar, click **Web Preview** > **Preview on port 8080**
 
 #### Local Access via kubectl
@@ -251,13 +255,13 @@ If you have `gcloud` and `kubectl` installed locally:
 
 1. Configure kubectl:
    ```bash
-   gcloud container clusters get-credentials CLUSTER --location=LOCATION --project=PROJECT
+   gcloud container clusters get-credentials [CLUSTER_NAME] --location=[LOCATION] --project=[PROJECT_ID]
    ```
 2. Port-forward:
    ```bash
-   until kubectl port-forward -n NAMESPACE svc/datacommons 8080:8080; do echo "Port-forward crashed. Respawning..." >&2; sleep 1; done
+   until kubectl port-forward -n [NAMESPACE] svc/datacommons 8080:8080; do echo "Port-forward crashed. Respawning..." >&2; sleep 1; done
    ```
-3. Open http://localhost:8080 in your browser
+3. Open <http://localhost:8080> in your browser
 
 #### Production Access
 
@@ -292,6 +296,7 @@ For additional resources, refer to the official Data Commons documentation:
 4. Review the Terraform execution log for provisioning errors
 
 **Common deployment errors:**
+
 - **"GKE cluster not found"** — Verify cluster name and project match
 - **"Insufficient permissions"** — Check [Required IAM Roles](#required-iam-roles)
 - **"PSA not configured"** — See [PSA Issues](#private-service-access-issues) below
@@ -303,12 +308,13 @@ For additional resources, refer to the official Data Commons documentation:
 **Quick diagnostics from Cloud Shell:**
 
 ```bash
-kubectl get pods -n NAMESPACE
-kubectl describe pod POD_NAME -n NAMESPACE
-kubectl logs -n NAMESPACE -l app.kubernetes.io/name=datacommons
+kubectl get pods -n [NAMESPACE]
+kubectl describe pod [POD_NAME] -n [NAMESPACE]
+kubectl logs -n [NAMESPACE] -l app.kubernetes.io/name=datacommons
 ```
 
 **Common pod issues:**
+
 - **Pending** — Cluster needs more capacity
 - **CrashLoopBackOff** — Check logs; often CloudSQL still initializing (wait 2–3 min)
 - **ImagePullBackOff** — Verify `dc_api_key` is correct
@@ -335,9 +341,10 @@ E0206 portforward.go:424 "Unhandled Error" err="an error occurred forwarding 808
 > This is expected behavior, not a critical error. The port-forward connection drops when the application receives too many concurrent requests — for example, opening the `/explore` page which loads many data widgets simultaneously. It can also occur during pod startup while the application is initializing.
 
 **Fix:**
+
 1. If using the auto-retry loop (`until kubectl port-forward ...`), it will reconnect automatically
 2. If running a single port-forward, simply re-run the command
-3. If the error persists, check pod status: `kubectl get pods -n NAMESPACE` — ensure the pod is `Running` with `1/1` Ready
+3. If the error persists, check pod status: `kubectl get pods -n [NAMESPACE]` — ensure the pod is `Running` with `1/1` Ready
 
 ### Error Loading GKE Cluster Location
 

@@ -106,7 +106,8 @@ Before deploying Data Commons Accelerator, ensure you have the following:
 | **Workload Identity** | Must be enabled (default on GKE 1.27+) |
 | **VPC Network** | VPC with Private Service Access configured (PSA could be created via Marketplace form if it's not existing) |
 
-**GKE Cluster:** If you need to create a cluster first, use the [GCP Kubernetes Engine creation form](https://console.cloud.google.com/kubernetes/add?).
+> [!NOTE]
+> If you need to create a GKE cluster first, use the [GCP Kubernetes Engine creation form](https://console.cloud.google.com/kubernetes/add?).
 
 ### Required IAM Roles
 
@@ -197,7 +198,7 @@ The CloudSQL section of the form asks how to configure Private Service Access fo
 | **Create New PSA** | First deployment, no existing PSA | The form will create a /20 PSA range automatically |
 | **Use Existing PSA** | PSA already configured, multiple deployments in same VPC | Provide your existing PSA range name |
 
-> [!WARNING]
+> [!CAUTION]
 > **Choosing the wrong PSA option can disrupt existing services.** If your VPC already has Private Service Access configured (e.g., for other CloudSQL instances, Cloud Composer, etc.), you **must** select "Use Existing PSA" and provide your range name. Selecting "Create New" on a VPC with existing PSA will **replace all existing peering ranges**.
 >
 > Check if your VPC has existing PSA before deploying:
@@ -216,17 +217,18 @@ Once you've completed all sections:
 2. **Accept the terms** by checking the Terms checkbox
 3. **Click the Deploy button**
 
-Deployment takes approximately **10–15 minutes**. A progress indicator will appear. **Do not close the browser tab** during deployment.
+Deployment takes approximately **10–15 minutes**. A progress indicator will appear.
+
+> [!WARNING]
+> **Do not close the browser tab** during deployment. Closing it may interrupt the provisioning process.
 
 When the status shows **"Active"**, your deployment is complete. Proceed to the next section for accessing your application.
 
 ### Step 4: Access Your Deployment
 
-After deployment completes, useful commands and resource information are available in the deployment details:
+> [!TIP]After deployment completes, useful commands and resource information are available in the deployment details:
+> **Infrastructure Manager** > **Deployments** > your deployment > **Outputs** tab.
 
-**Infrastructure Manager** > **Deployments** > your deployment > **Outputs** tab.
-
-> [!TIP]
 > The Outputs tab contains ready-to-use commands for connecting to your cluster, port-forwarding, uploading data, and viewing logs — you can copy and run them directly.
 
 #### Quick Access via Cloud Shell (Recommended)
@@ -239,7 +241,8 @@ The easiest way to access your deployment—no local tools needed:
    ```bash
    until kubectl port-forward -n NAMESPACE svc/datacommons 8080:8080; do echo "Port-forward crashed. Respawning..." >&2; sleep 1; done
    ```
-   (Replace `NAMESPACE` with your deployment name — the namespace matches your deployment name)
+   > [!NOTE]
+   > Replace `NAMESPACE` with your deployment name — the namespace matches your deployment name.
 4. In the Cloud Shell toolbar, click **Web Preview** > **Preview on port 8080**
 
 #### Local Access via kubectl
@@ -328,7 +331,8 @@ gcloud compute addresses list --global --filter="purpose=VPC_PEERING"
 E0206 portforward.go:424 "Unhandled Error" err="an error occurred forwarding 8080 -> 8080: connection refused"
 ```
 
-**Cause:** The port-forward connection drops when the application receives too many concurrent requests — for example, opening the `/explore` page which loads many data widgets simultaneously. It can also occur during pod startup while the application is initializing.
+> [!NOTE]
+> This is expected behavior, not a critical error. The port-forward connection drops when the application receives too many concurrent requests — for example, opening the `/explore` page which loads many data widgets simultaneously. It can also occur during pod startup while the application is initializing.
 
 **Fix:**
 1. If using the auto-retry loop (`until kubectl port-forward ...`), it will reconnect automatically
@@ -345,7 +349,8 @@ E0206 portforward.go:424 "Unhandled Error" err="an error occurred forwarding 808
 
 ## Deleting Your Deployment
 
-If you no longer need the Data Commons Accelerator, delete the deployment to stop incurring costs.
+> [!IMPORTANT]
+> Delete your deployment when no longer needed to stop incurring costs for CloudSQL, GKE workloads, and Cloud Storage.
 
 1. Go to [Google Cloud Console](https://console.cloud.google.com)
 2. Search for "Solution deployments"

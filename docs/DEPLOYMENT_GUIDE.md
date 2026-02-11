@@ -228,7 +228,7 @@ When the status shows **"Active"**, your deployment is complete. Proceed to the 
 
 > [!TIP]
 > After deployment completes, useful commands and resource information are available in the deployment details:
-> **Infrastructure Manager** > **Deployments** > your deployment > **Outputs** tab.
+> [Infrastructure Manager Deployments](https://console.cloud.google.com/infra-manager/deployments) > your deployment > **Outputs** tab.
 >
 > The Outputs tab contains ready-to-use commands for connecting to your cluster, port-forwarding, uploading data, and viewing logs — you can copy and run them directly.
 

@@ -10,17 +10,22 @@ To configure the User Interface of the landing page, upload your company logo an
 
 The application administrator password is not provided in the deployment outputs for security reasons. To retrieve your initial credentials:
 
+> [!TIP]
+> These commands are available pre-populated with your deployment values in the [Infrastructure Manager Deployments](https://console.cloud.google.com/infra-manager/deployments) > your deployment > **Outputs** tab. You can copy and run them directly.
+
 1. **Connect to your cluster** via Cloud Shell:
 
-    ```bash  
-    gcloud container clusters get-credentials [CLUSTER_NAME] --region [REGION]  
+    ```bash
+    gcloud container clusters get-credentials [CLUSTER_NAME] --region [REGION]
     ```
 
-2. **Run the secret retrieval command**:  
+2. **Run the secret retrieval command**:
 
     ```bash
-    kubectl get secret [DEPLOYMENT_NAME] -n [NAMESPACE] -o json | jq -r '.data | to_entries[] | "\\(.key): \\(.value | @base64d)"'  
+    kubectl get secret datacommons -n [NAMESPACE] -o json | jq -r '.data | to_entries[] | "\\(.key): \\(.value | @base64d)"'
     ```
+
+   Replace `[CLUSTER_NAME]`, `[REGION]`, and `[NAMESPACE]` with your deployment values. The namespace matches your deployment name.
 
 ## Administrator Log In
 

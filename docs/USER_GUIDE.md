@@ -81,7 +81,10 @@ To populate the dashboard with your university's private data:
 
 ### Data Security
 
-Your uploaded CSV data is stored securely within your Google Cloud SQL instance. It is combined with public Data Commons data only at the visualization layer and is not shared externally.
+Your data resides within a Google Cloud Storage bucket inside your dedicated GCP environment project. This setup allows you to control who can upload and manage the data that will be used for subsequent analytics.
+
+> [!NOTE]
+> Your data is kept private and is not shared with the public Data Commons. Data mixing and processing occur only on your deployed Custom Data Commons instance.
 
 ## Data commons for Data Analysts & Researchers
 

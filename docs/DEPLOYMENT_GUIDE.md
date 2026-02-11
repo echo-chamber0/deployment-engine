@@ -226,9 +226,10 @@ When the status shows **"Active"**, your deployment is complete. Proceed to the 
 
 ### Step 4: Access Your Deployment
 
-> [!TIP]After deployment completes, useful commands and resource information are available in the deployment details:
+> [!TIP]
+> After deployment completes, useful commands and resource information are available in the deployment details:
 > **Infrastructure Manager** > **Deployments** > your deployment > **Outputs** tab.
-
+>
 > The Outputs tab contains ready-to-use commands for connecting to your cluster, port-forwarding, uploading data, and viewing logs — you can copy and run them directly.
 
 #### Quick Access via Cloud Shell (Recommended)
@@ -241,8 +242,7 @@ The easiest way to access your deployment—no local tools needed:
    ```bash
    until kubectl port-forward -n NAMESPACE svc/datacommons 8080:8080; do echo "Port-forward crashed. Respawning..." >&2; sleep 1; done
    ```
-   > [!NOTE]
-   > Replace `NAMESPACE` with your deployment name — the namespace matches your deployment name.
+   Replace `NAMESPACE` with your deployment name — the namespace matches your deployment name.
 4. In the Cloud Shell toolbar, click **Web Preview** > **Preview on port 8080**
 
 #### Local Access via kubectl

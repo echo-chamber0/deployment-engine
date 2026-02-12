@@ -50,33 +50,16 @@ The application administrator password is not provided in the deployment outputs
 3. Enter the username and password retrieved in the previous step
 4. You will be logged in as an administrator for the domain template selected during deployment (Education, Health, or Energy)
 
----
+### Upload Custom Data
 
-## Data Commons for Education
-
-***Template: Student Recruitment Intelligence Center***
-
-### Education Overview
-
-The Education template combines your private applicant data with public demographic trends to help universities identify high-potential recruitment regions.
-
-### Education: For Administrators
-
-#### Prepare Custom Data
-
-To populate the dashboard with your university's private data:
+To populate the dashboard with your custom data:
 
 1. See [Prepare and load your own data](https://docs.datacommons.org/custom_dc/custom_data.html).
-2. Ensure your data matches the required schema for Education template. You can download a sample CSV directly from the application **Data & Files** tab and fill in your data there.
-
-#### Upload Custom Data
-
-To populate the dashboard with your university's private data:
-
-1. Log in and navigate to the **Admin Panel**.
-2. Go to **Data & Files** tab.
-3. Locate **Applicant Data Upload** section.
-4. Click **Choose File**, select your CSV, and click **Upload**.
+2. Ensure your data matches the required schema for your domain template. You can download a sample CSV directly from the application **Data & Files** tab and fill in your data there.
+3. Log in and navigate to the **Admin Panel**.
+4. Go to **Data & Files** tab.
+5. Locate the **Data Upload** section.
+6. Click **Choose File**, select your CSV, and click **Upload**.
    - *Success*: You will see a "Rows successfully uploaded" message.
    - *Error*: The system will indicate specific line/column issues.
 
@@ -99,11 +82,11 @@ To populate the dashboard with your university's private data:
 > kubectl logs -n [NAMESPACE] -l job-name=manual-sync -f
 > ```
 
-#### Customize User Interface
+### Customize User Interface
 
 1. In the Admin Panel, navigate to **Theme Settings**.
-2. **University Branding**:
-   - **Name:** Update the university name displayed in the top bar.
+2. **Organization Branding**:
+   - **Name:** Update the organization name displayed in the top bar.
    - **Logo:** Upload a PNG image.
 
 3. **Dashboard Text**:
@@ -112,12 +95,28 @@ To populate the dashboard with your university's private data:
 
 4. Click **Save Changes**. Updates are applied immediately.
 
-#### Data Security
+### Data Security
 
 Your data resides within a Google Cloud Storage bucket inside your dedicated GCP environment project. This setup allows you to control who can upload and manage the data that will be used for subsequent analytics.
 
 > [!NOTE]
 > Your data is kept private and is not shared with the public Data Commons. Data mixing and processing occur only on your deployed Custom Data Commons instance.
+
+---
+
+## Data Commons for Education
+
+***Template: Student Recruitment Intelligence Center***
+
+### Education Overview
+
+The Education template combines your private applicant data with public demographic trends to help universities identify high-potential recruitment regions.
+
+### Education: For Administrators
+
+Your CSV data must match the Education template schema. Download a sample CSV from the **Data & Files** tab in the Admin Panel.
+
+For upload instructions and UI customization, see [Getting Started](#getting-started).
 
 ### Education: For Data Analysts & Researchers
 
@@ -153,19 +152,9 @@ The Health template allows organizations to compare specific health metrics (e.g
 
 ### Health: For Administrators
 
-#### Upload & Configuration
+Your CSV must contain city-level health metrics formatted according to the Health template schema.
 
-1. Log in and navigate to the **Admin Panel**
-2. Go to the **Data & Files** tab
-3. Upload your CSV containing city-level health metrics
-
-See the [Getting Started](#getting-started) section for detailed upload steps and the sample CSV format.
-
-- **Data Requirement:** Ensure your CSV contains city-level health metrics formatted according to the template schema.
-
-#### Customize Branding
-
-Follow the standard Theme Settings instructions to update the Organization Name and Logo.
+For upload instructions and UI customization, see [Getting Started](#getting-started).
 
 ### Health: For Data Analysts & Researchers
 
@@ -208,14 +197,10 @@ The Energy template focuses on environmental monitoring, specifically correlatin
 
 ### Energy: For Administrators
 
-#### Upload Asset Data
-
-1. Log in and navigate to **Admin Panel** > **Data & Files**
-2. Upload your **Asset Locations CSV** containing coordinates (latitude/longitude) of your infrastructure
-3. See the sample CSV in the **Data & Files** tab for the required format
-
 > [!IMPORTANT]
 > Your CSV must contain latitude/longitude coordinates for each asset. See the sample file in the Admin Panel for the required format.
+
+For upload instructions and UI customization, see [Getting Started](#getting-started).
 
 ### Energy: For Data Analysts & Researchers
 

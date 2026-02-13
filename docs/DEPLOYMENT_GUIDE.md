@@ -181,7 +181,8 @@ This section walks through deploying Data Commons Accelerator via GCP Marketplac
 
 The Marketplace will open a deployment configuration form organized into several sections: **Basic** (deployment name and project), **GKE** (cluster details), **CloudSQL** (database settings), **Cloud Storage** (bucket configuration), **API** (Data Commons API key), and **Application** (pod replicas and resource sizing).
 
-Each field has built-in tooltips with detailed guidance—hover over or click the help icon next to any field for clarification. The form validates your inputs and shows clear error messages if anything is incorrect.
+> [!TIP] 
+> Each field has built-in tooltips with detailed guidance—hover over or click the help icon next to any field for clarification. The form validates your inputs and shows clear error messages if anything is incorrect.
 
 For detailed descriptions of every form field, valid values, and tips, see [Marketplace Fields Reference](MARKETPLACE_FIELDS.md).
 
